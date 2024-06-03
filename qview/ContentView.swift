@@ -32,7 +32,7 @@ Here's a small SwiftUI application that displays an NxM matrix of colored cells,
 import SwiftUI
 
 // Global opacity for cells
-let grayBackgroundOpacity: Double = 0.5
+//let grayBackgroundOpacity: Double = 0.5
 
 // MatrixView displays a grid of cells and corresponding labels
 struct MatrixView: View {
@@ -71,31 +71,49 @@ struct MatrixView: View {
     }
 }
 
-// CellView represents each cell in the grid
-struct CellView: View {
-    var move: Move?
-    let correctColor: Color
-    let incorrectColor: Color
-
-    var body: some View {
-        Text(move != nil ? "\(move!.number)" : "")
-            .frame(width: 70, height: 70)
-            .background(Color.black)
-            .foregroundColor(.white)
-            .border(move?.outcome == .correct ? correctColor : incorrectColor, width: move != nil ? 3 : 0)
-    }
-}
-
-// Data model for moves
+// Move now includes an optional text property and a useSymbol flag
 struct Move {
-    internal init(_ number: Int, outcome: Outcome) {
-        self.number = number
-        self.outcome = outcome
-    }
-    
-    let number: Int
-    let outcome: Outcome
+  internal init(_ number: Int, outcome: Outcome, text: String? = nil, useSymbol: Bool = false) {
+    self.number = number
+    self.outcome = outcome
+    self.text = text ?? "\(number)"
+    self.useSymbol = useSymbol
+  }
+
+  let number: Int
+  let outcome: Outcome
+  let text: String
+  let useSymbol: Bool
 }
+
+// CellView represents each cell in the grid with new text or symbol display logic
+struct CellView: View {
+  var move: Move?
+  let correctColor: Color
+  let incorrectColor: Color
+
+  var body: some View {
+    Group {
+      if let move = move {
+        if move.useSymbol  {
+          Image(systemName: move.text)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+          .frame(width: 30, height:30)
+        } else {
+          Text(move.text)
+        }
+      } else {
+        Text("")
+      }
+    }
+    .frame(width: 70, height: 70)
+    .background(Color.black)
+    .foregroundColor(.white)
+    .border(move?.outcome == .correct ? correctColor : incorrectColor, width: move != nil ? 3 : 0)
+  }
+}
+
 
 // Enum to define outcomes
 enum Outcome {
@@ -224,188 +242,14 @@ struct PagedScrollView: View {
     }
 }
 fileprivate func borderAdjacency() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-      
-      PDM((row: 1, col: 0), move: Move(1, outcome: .incorrect)),
-        PDM((row: 0, col: 0), move: Move(0, outcome: .correct)),
-        PDM((row: 1, col: 1), move: Move(0, outcome: .correct)),
-        PDM((row: 0, col: 1), move: Move(0, outcome: .correct)),
-        PDM((row: 2, col: 0), move: Move(0, outcome: .correct)),
-        PDM((row: 2, col: 1), move: Move(0, outcome: .correct)),
-    ]), reason: "Border Adjacency", bottomLabel: "The border cells have 5 adjacent cells", correctColor: .yellow, incorrectColor: .blue)
-}
-fileprivate func cornerAdjacency() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-        PDM((row: 0, col: 0), move: Move(1, outcome: .incorrect)),
-        PDM((row: 1, col: 1), move: Move(0, outcome: .correct)),
-        PDM((row: 1, col: 0), move: Move(0, outcome: .correct)),
-        PDM((row: 0, col: 1), move: Move(0, outcome: .correct)),
-    ]), reason: "Corner Adjacency", bottomLabel: "The corner cells have only 3 adjacent cells", correctColor: .yellow, incorrectColor: .blue)
-}
-fileprivate func interiorAdjacency() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-      
-        PDM((row: 1, col: 1), move: Move(1, outcome: .incorrect)),
-        PDM((row: 0, col: 0), move: Move(0, outcome: .correct)),
-        PDM((row: 0, col: 2), move: Move(0, outcome: .correct)),
-        PDM((row: 2, col: 0), move: Move(0, outcome: .correct)),
-        PDM((row: 1, col: 0), move: Move(0, outcome: .correct)),
-        PDM((row: 2, col: 2), move: Move(0, outcome: . correct)),
-        PDM((row: 1, col: 2), move: Move(0, outcome: . correct)),
-        PDM((row: 0, col: 1), move: Move(0, outcome: .correct)),
-        PDM((row: 2, col: 1), move: Move(0, outcome: .correct))
-    ]), reason: "Interior Adjacency", bottomLabel: "Each interior cell has upto 8 adjacent cells", correctColor: .yellow, incorrectColor: .blue)
-}
-
-fileprivate func notA3x3Winner() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-        PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-        PDM((row: 1, col: 1), move: Move(2, outcome: .incorrect)),
-        PDM((row: 0, col: 2), move: Move(3, outcome: .correct)),
-        PDM((row: 2, col: 0), move: Move(4, outcome: .correct)),
-        PDM((row: 1, col: 0), move: Move(5, outcome: .incorrect)),
-        PDM((row: 2, col: 2), move: Move(6, outcome: . correct)),
-        
-        PDM((row: 1, col: 2), move: Move(7, outcome: . correct)),
-        PDM((row: 0, col: 1), move: Move(8, outcome: .incorrect)),
-        PDM((row: 2, col: 1), move: Move(9, outcome: .incorrect))
-    ]), reason: "All Filled Loser", bottomLabel: "Not a winner, yet all four corners are green", correctColor: .green, incorrectColor: .red)
-}
-
-fileprivate func allFilledButWinningPath() -> MatrixView {
-    return MatrixView(rows: 4, cols: 4, matrix: PDMatrix(rows: 4, cols: 4, pdms: [
-        PDM((row: 0, col: 0), move: Move(1, outcome: .incorrect)),
-        PDM((row: 0, col: 1), move: Move(2, outcome: .correct)),
-        PDM((row: 0, col: 2), move: Move(3, outcome: .incorrect)),
-        PDM((row: 0, col: 3), move: Move(4, outcome: .correct)),
-        PDM((row: 1, col: 0), move: Move(5, outcome: .correct)),
-        PDM((row: 1, col: 1), move: Move(6, outcome: .incorrect)),
-        PDM((row: 1, col: 2), move: Move(7, outcome: .correct)),
-        PDM((row: 1, col: 3), move: Move(8, outcome: .incorrect)),
-        PDM((row: 2, col: 0), move: Move(9, outcome: .correct)),
-        PDM((row: 2, col: 1), move: Move(10, outcome: .incorrect)),
-        PDM((row: 2, col: 2), move: Move(11, outcome: .correct)),
-        PDM((row: 2, col: 3), move: Move(12, outcome: .incorrect)),
-        PDM((row: 3, col: 0), move: Move(13, outcome: .correct)),
-        PDM((row: 3, col: 1), move: Move(14, outcome: .incorrect)),
-        PDM((row: 3, col: 2), move: Move(15, outcome: .correct)),
-        PDM((row: 3, col: 3), move: Move(16, outcome: .incorrect))
-    ]), reason: "All Filled But Success", bottomLabel: "All cells filled and winning path", correctColor: .green, incorrectColor: .red)
-}
-fileprivate func convolutedPathToSuccess() -> MatrixView {
-    return MatrixView(
-        rows: 6,
-        cols: 6,
-        matrix: PDMatrix(
-            rows: 6,
-            cols: 6,
-            pdms: [
-                PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-                PDM((row: 1, col: 1), move: Move(2, outcome: .correct)),
-                PDM((row: 0, col: 3), move: Move(3, outcome: .correct)),
-                PDM((row: 1, col: 4), move: Move(4, outcome: .correct)),
-                PDM((row: 2, col: 3), move: Move(5, outcome: .correct)),
-                PDM((row: 3, col: 4), move: Move(6, outcome: .correct)),
-                PDM((row: 4, col: 5), move: Move(7, outcome: .correct)),
-                PDM((row: 2, col: 1), move: Move(8, outcome: .correct)),
-                PDM((row: 4, col: 1), move: Move(9, outcome: .correct)),
-                PDM((row: 5, col: 2), move: Move(10, outcome: .correct)),
-                PDM((row: 5, col: 0), move: Move(11, outcome: .correct)),
-                PDM((row: 2, col: 2), move: Move(12, outcome: .correct)),
-                PDM((row: 3, col: 0), move: Move(13, outcome: .correct)),
-                PDM((row: 3, col: 2), move: Move(14, outcome: .correct)),
-                PDM((row: 1, col: 0), move: Move(15, outcome: .correct)),
-                PDM((row: 5, col: 4), move: Move(16, outcome: .correct)),
-                PDM((row: 4, col: 3), move: Move(17, outcome: .correct)),
-                PDM((row: 4, col: 4), move: Move(18, outcome: .correct))
-            ]
-        ),
-        reason: "Convoluted Path to Success",
-        bottomLabel: "Complex path with many cells empty",
-        correctColor: .green,
-        incorrectColor: .red
-    )
-}
-
-fileprivate func longPathToSuccess() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-        PDM((row: 0, col: 2), move: Move(1, outcome: .correct)),
-        PDM((row: 1, col: 1), move: Move(2, outcome: .incorrect)),
-        PDM((row: 1, col: 2), move: Move(3, outcome: .correct)),
-        PDM((row: 2, col: 2), move: Move(4, outcome: .correct)),
-        PDM((row: 2, col: 1), move: Move(5, outcome: .correct)),
-        PDM((row: 2, col: 0), move: Move(6, outcome: .correct))
-    ]), reason: "Long Path to Success", bottomLabel: "Reached end successfully", correctColor: .green, incorrectColor: .red)
-}
-
-fileprivate func shortPathToSuccess() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-        PDM((row: 0, col: 2), move: Move(1, outcome: .correct)),
-        PDM((row: 1, col: 1), move: Move(2, outcome: .correct)),
-        PDM((row: 2, col: 0), move: Move(3, outcome: .correct))
-    ]), reason: "Short Path to Success", bottomLabel: "Can't do better on 3x3 board", correctColor: .green, incorrectColor: .red)
-}
-
-fileprivate func longPathToFailure() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-        PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-        PDM((row: 0, col: 1), move: Move(2, outcome: .incorrect)),
-        PDM((row: 0, col: 2), move: Move(3, outcome: .correct)),
-        PDM((row: 1, col: 2), move: Move(4, outcome: .correct)),
-        PDM((row: 2, col: 2), move: Move(5, outcome: .incorrect)),
-        PDM((row: 2, col: 1), move: Move(6, outcome: .correct)),
-        PDM((row: 2, col: 0), move: Move(7, outcome: .incorrect))
-    ]), reason: "Long Path to Failure", bottomLabel: "There was hope until move 7 failed\nIt loooked like player needed to avoid two cells", correctColor: .green, incorrectColor: .red)
-}
-
-fileprivate func shortPathToFailure() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-        PDM((row: 0, col: 0), move: Move(1, outcome: .incorrect)),
-        PDM((row: 2, col: 0), move: Move(2, outcome: .incorrect))
-    ]), reason: "Short Path to Failure", bottomLabel: "Can't Ever Get Either Diagonal", correctColor: .green, incorrectColor: .red)
-}
-
-// New 6x6 Examples
-fileprivate func sixBySixExample1() -> MatrixView {
-    return MatrixView(rows: 6, cols: 6, matrix: PDMatrix(rows: 6, cols: 6, pdms: [
-        PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-        PDM((row: 1, col: 1), move: Move(2, outcome: .correct)),
-        PDM((row: 2, col: 2), move: Move(3, outcome: .correct)),
-        PDM((row: 3, col: 3), move: Move(4, outcome: .correct)),
-        PDM((row: 4, col: 4), move: Move(5, outcome: .correct)),
-        PDM((row: 5, col: 5), move: Move(6, outcome: .correct))
-    ]), reason: "6x6 Path 1", bottomLabel: "Filled upper diagonal correctly", correctColor: .green, incorrectColor: .red)
-}
-
-fileprivate func sixBySixExample2() -> MatrixView {
-    return MatrixView(rows: 6, cols: 6, matrix: PDMatrix(rows: 6, cols: 6, pdms: [
-        PDM((row: 0, col: 5), move: Move(6, outcome: .correct)),
-        PDM((row: 1, col: 4), move: Move(5, outcome: .correct)),
-        PDM((row: 2, col: 3), move: Move(4, outcome: .correct)),
-        PDM((row: 3, col: 2), move: Move(3, outcome: .correct)),
-        PDM((row: 4, col: 1), move: Move(2, outcome: .correct)),
-        PDM((row: 5, col: 0), move: Move(1, outcome: .correct))
-    ]), reason: "Bottoms Up", bottomLabel: "Filled lower diagonal correctly", correctColor: .green, incorrectColor: .red)
-}
-
-fileprivate func sixBySixNiceWinner() -> MatrixView {
-    return MatrixView(rows: 6, cols: 6, matrix: PDMatrix(rows: 6, cols: 6, pdms: [
-      PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-      
-      PDM((row: 1, col: 1), move: Move(2, outcome: .incorrect)),
-        PDM((row: 0, col: 1), move: Move(3, outcome: .correct)),
-      
-        PDM((row: 1, col: 2), move: Move(4, outcome: .correct)),
-        PDM((row: 2, col: 2), move: Move(5, outcome: .correct)),
-        PDM((row: 3, col: 3), move: Move(6, outcome: .correct)),
-        PDM((row: 4, col: 4), move: Move(7, outcome: .incorrect)),
-      
-      PDM((row: 4, col: 3), move: Move(8, outcome: .correct)),
-      
-      PDM((row: 5, col: 4), move: Move(9, outcome: .correct)),
-       
-        PDM((row: 5, col: 5), move: Move(10, outcome: .correct))
-    ]), reason: "Nice Winner", bottomLabel: "Despite two key diagonal losers, the game was won in 10 moves!", correctColor: .green, incorrectColor: .red)
+  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+    PDM((row: 1, col: 0), move: Move(1, outcome: .incorrect, text: "flag.fill", useSymbol: true)),
+    PDM((row: 0, col: 0), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 1, col: 1), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 0, col: 1), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 2, col: 0), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 2, col: 1), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+  ]), reason: "Border Adjacency", bottomLabel: "The border cells have 5 adjacent cells", correctColor: .yellow, incorrectColor: .blue)
 }
 
 /*
@@ -426,3 +270,7 @@ The app provides visual feedback on the correctness of the user's moves by chang
 
 
 */
+#Preview {
+  ContentView()
+  
+}
