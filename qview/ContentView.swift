@@ -1,38 +1,6 @@
-/*
- write a small swiftui app which displays an NxM Matrix of colored cells that can be used as the background for QANDA. Make all cells gray. Accept a NxM Matrix of 2 tuples of (move #,outcome) as Input.
- 
- If the cell is correct give it a 3 pixel green border, if its incorrect give it a red border. As each cell is generated place the move number(1 origined) into the cell as text
- 
- Here's a small SwiftUI application that displays an NxM matrix of colored cells, accepting a matrix of 2-tuples of (move #, outcome) as input. It's designed to meet your specifications, including displaying the move number and applying borders based on the outcome of each cell:
- 
- --''''
- 
- 
- Let's audit the `generateTestMatrix` function and ensure that the moves are generated such that each subsequent move adheres to the adjacency rule perfectly.
- 
- ### Audit and Corrections
- 
- 1. **Matrix Initialization:**
- - A matrix of size NxN is created with all cells initialized to `nil`.
- 
- 2. **Starting **
- - The first move is fixed to the top-left cell (0, 0).
- 
- 3. **Adjacency Rule:**
- - Moves are only valid if they are to an adjacent cell (diagonally, horizontally, or vertically).
- - Ensure cells are chosen randomly but within valid bounds and previously unoccupied.
- 
- 4. **Termination Condition:**
- - If no valid adjacent cell is found, stop generating further moves, leaving the remaining cells blank.
- 
- 
- */
-
 
 import SwiftUI
 
-// Global opacity for cells
-//let grayBackgroundOpacity: Double = 0.5
 
 // MatrixView displays a grid of cells and corresponding labels
 struct MatrixView: View {
@@ -43,44 +11,50 @@ struct MatrixView: View {
   let bottomLabel: String
   let correctColor: Color
   let incorrectColor: Color
+  @Binding var  isPresented: Bool
   
   var body: some View {
-    VStack {
-      // Top label with reason
-      Text("\(reason)")
-        .font(.title)
-        .padding()
-      
-      // Grid of cells
-      VStack(spacing: 0) {
-        ForEach(0..<rows, id: \.self) { row in
-          HStack(spacing: 0) {
-            ForEach(0..<cols, id: \.self) { column in
-              CellView(move: matrix[row][column], correctColor: correctColor, incorrectColor: incorrectColor)
+    ZStack {
+      VStack {
+        HStack { Spacer(); DismissButton(isPresented: $isPresented).padding(.horizontal)}
+        Spacer()
+      }
+      VStack {
+        // Top label with reason
+        Text("\(reason)")
+          .font(.title)
+          .padding()
+        
+        // Grid of cells
+        VStack(spacing: 0) {
+          ForEach(0..<rows, id: \.self) { row in
+            HStack(spacing: 0) {
+              ForEach(0..<cols, id: \.self) { column in
+                CellView(move: matrix[row][column], correctColor: correctColor, incorrectColor: incorrectColor)
+              }
             }
           }
         }
-      }
-      .padding()
-      
-      // Bottom label
-      Text("\(bottomLabel)")
-        .font(.body)
         .padding()
+        
+        // Bottom label
+        Text("\(bottomLabel)")
+          .font(.body)
+          .padding()
+      }
     }
   }
 }
 
 // Move now includes an optional text property and a useSymbol flag
 struct Move {
-  internal init(_ number: Int, outcome: Outcome, text: String? = nil, useSymbol: Bool = false) {
-    self.number = number
+  internal init(_ outcome: Outcome, text: String? = nil, useSymbol: Bool = true) {
+
     self.outcome = outcome
-    self.text = text ?? "\(number)"
+    self.text = text ?? ""
     self.useSymbol = useSymbol
   }
   
-  let number: Int
   let outcome: Outcome
   let text: String
   let useSymbol: Bool
@@ -107,7 +81,7 @@ struct CellView: View {
         Text("")
       }
     }
-    .frame(width: 70, height: 70)
+    .frame(width: 64, height: 64)
     .background(Color.black)
     .foregroundColor(.white)
     .border(move?.outcome == .correct ? correctColor : incorrectColor, width: move != nil ? 3 : 0)
@@ -161,37 +135,53 @@ struct QANDAApp: App {
 
 // ContentView as the root view
 struct ContentView: View {
-  var body: some View {
-    PagedScrollView()
-  }
+    @State private var isShowingPagedScrollView = false
+
+  @State private var isShowingOnboardingView = false
+    var body: some View {
+      Spacer()
+        VStack {
+            Button(action: {
+                isShowingPagedScrollView.toggle()
+            }) {
+                Text("Present How To Play")
+            }
+        }
+        .fullScreenCover(isPresented: $isShowingPagedScrollView) {
+            PagedScrollView(isPresented: $isShowingPagedScrollView)
+        }
+      Spacer()
+      VStack {
+          Button(action: {
+              isShowingOnboardingView.toggle()
+          }) {
+              Text("Present Onboarding Sequence")
+          }
+      }
+      .fullScreenCover(isPresented: $isShowingOnboardingView) {
+          PagedScrollView(isPresented: $isShowingOnboardingView)
+      }
+      Spacer()
+    }
 }
-struct FrontMatter :View{
-  var body: some View {
-    ZStack{
-      Color.yellow
-      Text("How to Play").font(.largeTitle)
-    }.ignoresSafeArea()
-  }
+struct DismissButton: View {
+    @Environment(\.presentationMode) var presentationMode
+  @Binding var  isPresented: Bool
+    var body: some View {
+        Button(action: {
+            isPresented = false
+          
+        }) {
+            Image(systemName: "x.circle")
+                .font(.title)
+                .foregroundColor(.black)
+        }
+    }
 }
-struct MoreFrontMatter :View{
-  var body: some View {
-    ZStack{
-      Color.yellow
-      Text("Let's Talk About Adjacency").font(.largeTitle).padding()
-    }.ignoresSafeArea()
-  }
-}
-struct Intermission :View{
-  var body: some View {
-    ZStack{
-      Color.yellow
-      Text("Some Examples").font(.largeTitle)
-    }.ignoresSafeArea()
-  }
-}
+
 // PagedScrollView for navigation through different examples
 struct PagedScrollView: View {
-  
+  @Binding var  isPresented: Bool
   func mkID() -> String {
     return UUID().uuidString
   }
@@ -201,71 +191,60 @@ struct PagedScrollView: View {
       FrontMatter()
         .tag(mkID())
       
-      startInAnyCorner()
+      startInAnyCorner(isPresented: $isPresented)
         .tag(mkID())
-      move0()
-        .tag(mkID())
-      
-      nonAdjecntMove()
+      move0(isPresented: $isPresented)
         .tag(mkID())
       
-      move1()
+      nonAdjecntMove(isPresented: $isPresented)
         .tag(mkID())
-      move2()
+      
+      move1(isPresented: $isPresented)
+        .tag(mkID())
+      move2(isPresented: $isPresented)
         .tag(mkID())
       MoreFrontMatter()
         .tag(mkID())
       
-      interiorAdjacency()
+      interiorAdjacency(isPresented: $isPresented)
         .tag(mkID())
       
-      borderAdjacency()
+      borderAdjacency(isPresented: $isPresented)
         .tag(mkID())
       
-      cornerAdjacency()
+      cornerAdjacency(isPresented: $isPresented)
         .tag(mkID())
       Intermission()
         .tag(mkID())
-      shortPathToSuccess()
+      shortPathToSuccess(isPresented: $isPresented)
         .tag(mkID())
       
-      shortPathToFailure()
+      shortPathToFailure(isPresented: $isPresented)
         .tag(mkID())
       
-      longPathToSuccess()
+      longPathToSuccess(isPresented: $isPresented)
         .tag(mkID())
       
-      notA3x3Winner()
+      notA3x3Winner(isPresented: $isPresented)
         .tag(mkID())
-      longPathToFailure()
-        .tag(mkID())
-      
-      
-      allFilledButWinningPath()
+      longPathToFailure(isPresented: $isPresented)
         .tag(mkID())
       
-      sixBySixExample2()
+      
+      allFilledButWinningPath(isPresented: $isPresented)
         .tag(mkID())
       
-      sixBySixNiceWinner()
+      sixBySixExample2(isPresented: $isPresented)
+        .tag(mkID())
+      
+      sixBySixNiceWinner(isPresented: $isPresented)
         .tag(mkID())
       
     }
     .tabViewStyle(PageTabViewStyle())
   }
 }
-func notA3x3Winner() -> MatrixView {
-  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-    PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-    PDM((row: 0, col: 1), move: Move(6, outcome: .incorrect)),
-    PDM((row: 0, col: 2), move: Move(3, outcome: .correct)),
-    PDM((row: 1, col: 1), move: Move(2, outcome: .incorrect)),
-    PDM((row: 1, col: 2), move: Move(4, outcome: . correct)),
-    // PDM((row: 2, col: 0), move: Move(4, outcome: .correct)),
-    PDM((row: 2, col: 1), move: Move(7, outcome: .incorrect)),
-    PDM((row: 2, col: 2), move: Move(5, outcome: . correct)),
-  ]), reason: "Tough Loss", bottomLabel: "Not a winner", correctColor: .green, incorrectColor: .red)
-}
+
 
 /*
  
