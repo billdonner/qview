@@ -202,7 +202,7 @@ func sixBySixExample1(isPresented: Binding<Bool>) -> MatrixView {
   )
 }
 
-func sixBySixExample2(isPresented: Binding<Bool>) -> MatrixView {
+func bottomsUp(isPresented: Binding<Bool>) -> MatrixView {
   return MatrixView(
     rows: 6, cols: 6,
     matrix: PDMatrix(rows: 6, cols: 6, pdms: [
@@ -221,7 +221,7 @@ func sixBySixExample2(isPresented: Binding<Bool>) -> MatrixView {
   )
 }
 
-func sixBySixNiceWinner(isPresented: Binding<Bool>) -> MatrixView {
+func niceWinner(isPresented: Binding<Bool>) -> MatrixView {
   return MatrixView(
     rows: 6, cols: 6,
     matrix: PDMatrix(rows: 6, cols: 6, pdms: [
@@ -231,9 +231,10 @@ func sixBySixNiceWinner(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 1, col: 2), move: Move(.correct, text: ntoSF(4))),
       PDM((row: 2, col: 2), move: Move(.correct, text: ntoSF(5))),
       PDM((row: 3, col: 3), move: Move(.correct, text: ntoSF(6))),
-      PDM((row: 4, col: 4), move: Move(.incorrect, text: ntoSF(7))),
-      PDM((row: 5, col: 4), move: Move(.correct, text: ntoSF(8))),
-      PDM((row: 5, col: 5), move: Move(.correct, text: ntoSF(9))),
+      PDM((row: 4, col: 4), move: Move(.incorrect, text: ntoSF(7))), 
+      PDM((row: 4, col: 3), move: Move(.correct, text: ntoSF(8))),
+      PDM((row: 5, col: 4), move: Move(.correct, text: ntoSF(9))),
+      PDM((row: 5, col: 5), move: Move(.correct, text: ntoSF(10))),
     ]),
     reason: "Nice Winner",
     bottomLabel: "Despite two key diagonal losers, the game was won in 10 moves!",
