@@ -17,7 +17,6 @@ import Foundation
 }
  func interiorAdjacency() -> MatrixView {
     return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-      
         PDM((row: 1, col: 1), move: Move(1, outcome: .incorrect, text: "flag.fill", useSymbol: true)),
         PDM((row: 0, col: 0), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
         PDM((row: 0, col: 2), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
@@ -30,20 +29,7 @@ import Foundation
     ]), reason: "Interior Adjacency", bottomLabel: "Each interior cell has upto 8 adjacent cells", correctColor: .yellow, incorrectColor: .blue)
 }
 
- func notA3x3Winner() -> MatrixView {
-    return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-        PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-        PDM((row: 1, col: 1), move: Move(2, outcome: .incorrect)),
-        PDM((row: 0, col: 2), move: Move(3, outcome: .correct)),
-        PDM((row: 2, col: 0), move: Move(4, outcome: .correct)),
-        PDM((row: 1, col: 0), move: Move(5, outcome: .incorrect)),
-        PDM((row: 2, col: 2), move: Move(6, outcome: . correct)),
-        
-        PDM((row: 1, col: 2), move: Move(7, outcome: . correct)),
-        PDM((row: 0, col: 1), move: Move(8, outcome: .incorrect)),
-        PDM((row: 2, col: 1), move: Move(9, outcome: .incorrect))
-    ]), reason: "All Filled Loser", bottomLabel: "Not a winner, yet all four corners are green", correctColor: .green, incorrectColor: .red)
-}
+
 
  func allFilledButWinningPath() -> MatrixView {
     return MatrixView(rows: 4, cols: 4, matrix: PDMatrix(rows: 4, cols: 4, pdms: [
@@ -60,10 +46,7 @@ import Foundation
         PDM((row: 2, col: 2), move: Move(11, outcome: .correct)),
         PDM((row: 2, col: 3), move: Move(12, outcome: .incorrect)),
         PDM((row: 3, col: 0), move: Move(13, outcome: .correct)),
-        PDM((row: 3, col: 1), move: Move(14, outcome: .incorrect)),
-        PDM((row: 3, col: 2), move: Move(15, outcome: .correct)),
-        PDM((row: 3, col: 3), move: Move(16, outcome: .incorrect))
-    ]), reason: "All Filled But Success", bottomLabel: "All cells filled and winning path", correctColor: .green, incorrectColor: .red)
+    ]), reason: "Almost All Filled But Success", bottomLabel: "4-7-2-5-9-13", correctColor: .green, incorrectColor: .red)
 }
 
 
@@ -131,19 +114,60 @@ import Foundation
  func sixBySixNiceWinner() -> MatrixView {
     return MatrixView(rows: 6, cols: 6, matrix: PDMatrix(rows: 6, cols: 6, pdms: [
       PDM((row: 0, col: 0), move: Move(1, outcome: .correct)),
-      
       PDM((row: 1, col: 1), move: Move(2, outcome: .incorrect)),
         PDM((row: 0, col: 1), move: Move(3, outcome: .correct)),
-      
         PDM((row: 1, col: 2), move: Move(4, outcome: .correct)),
         PDM((row: 2, col: 2), move: Move(5, outcome: .correct)),
         PDM((row: 3, col: 3), move: Move(6, outcome: .correct)),
         PDM((row: 4, col: 4), move: Move(7, outcome: .incorrect)),
-      
-      PDM((row: 4, col: 3), move: Move(8, outcome: .correct)),
-      
-      PDM((row: 5, col: 4), move: Move(9, outcome: .correct)),
-       
-        PDM((row: 5, col: 5), move: Move(10, outcome: .correct))
+      PDM((row:5, col:4), move: Move(8, outcome: .correct)),
+        PDM((row: 5, col: 5), move: Move(9, outcome: .correct))
     ]), reason: "Nice Winner", bottomLabel: "Despite two key diagonal losers, the game was won in 10 moves!", correctColor: .green, incorrectColor: .red)
+}
+ func borderAdjacency() -> MatrixView {
+  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+    PDM((row: 1, col: 0), move: Move(1, outcome: .incorrect, text: "flag.fill", useSymbol: true)),
+    PDM((row: 0, col: 0), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 1, col: 1), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 0, col: 1), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 2, col: 0), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 2, col: 1), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+  ]), reason: "Border Adjacency", bottomLabel: "The border cells have 5 adjacent cells", correctColor: .yellow, incorrectColor: .blue)
+}
+ func startInAnyCorner() -> MatrixView {
+  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+    
+    PDM((row: 0, col: 0), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    
+    PDM((row: 0, col: 2), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 2, col: 0), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+    PDM((row: 2, col:2), move: Move(0, outcome: .correct, text: "checkmark", useSymbol: true)),
+  ]), reason: "Start In Any Corner", bottomLabel: "Do We Want This Rule?", correctColor: .yellow, incorrectColor: .blue)
+}
+ func move0() -> MatrixView {
+  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+    PDM((row: 2, col: 0), move: Move(0, outcome: .correct, text: "1.circle", useSymbol: true)),
+  ]), reason: "Let's Start Here", bottomLabel: "Picking A Friendly Topic and Question", correctColor: .yellow, incorrectColor: .blue)
+}
+ func move1() -> MatrixView {
+  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+    PDM((row: 1, col: 1), move: Move(0, outcome: .correct, text: "2.circle", useSymbol: true)),
+    PDM((row: 2, col: 0), move: Move(0, outcome: .correct, text: "1.circle", useSymbol: true)),
+    
+  ]), reason: " Now Go To the Center", bottomLabel: "The center is often a good choice", correctColor: .yellow, incorrectColor: .blue)
+}
+
+func nonAdjecntMove() -> MatrixView {
+  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+    PDM((row: 2, col: 2), move: Move(0, outcome: .correct, text: "xmark.circle", useSymbol: true)),
+    PDM((row: 2, col: 0), move: Move(0, outcome: .correct, text: "1.circle", useSymbol: true)),
+    
+  ]), reason: "You Can't Move Here", bottomLabel: "It's not adjacent!", correctColor: .yellow, incorrectColor: .blue)
+}
+ func move2() -> MatrixView {
+  return MatrixView(rows: 3, cols: 3, matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+    PDM((row: 1, col: 1), move: Move(0, outcome: .correct, text: "2.circle", useSymbol: true)),
+    PDM((row: 2, col: 0), move: Move(0, outcome: .correct, text: "1.circle", useSymbol: true)),
+    PDM((row: 0, col: 2), move: Move(0, outcome: .correct, text: "3.circle", useSymbol: true)),
+  ]), reason: "Good Job, Now Finish Up", bottomLabel: "If you answer the associated questions correctly,  you win!", correctColor: .yellow, incorrectColor: .blue)
 }
