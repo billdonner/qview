@@ -16,13 +16,9 @@ import SwiftUI
  struct OB01: View {
    @Binding var isPresented:Bool
    var body: some View {
-     ZStack {
-       WrappedDismissButton(isPresented: $isPresented)
-       VStack {
-//         Image("Onboarding1")
-//           .resizable()
-//           .scaledToFit()
-//           .padding()
+     VStack {
+      // WrappedDismissButton(isPresented: $isPresented)
+  
          
      MatrixView(
              rows: 6, cols: 6,
@@ -40,8 +36,8 @@ import SwiftUI
                PDM((row: 5, col: 4), move: Move(.correct, text: ntoSF(9))),
                PDM((row: 5, col: 5), move: Move(.correct, text: ntoSF(10))),
              ]),
-             topLabel: "Nice Winner",
-             bottomLabel: "Despite two key diagonal losers, the game was won in 10 moves!",
+             topLabel:nil,
+             bottomLabel: nil,
              correctColor: .green,
              incorrectColor: .red,
              isPresented: $isPresented
@@ -53,7 +49,6 @@ import SwiftUI
            .padding()
        }
      }
-   }
 }
 
  /**
@@ -233,7 +228,7 @@ struct OnboardingScreen: View {
       OB07(isPresented: $isPresented)
         .tag(mkID())
     }
-    .background(Color.red)
+    .background(Color.white.opacity(0.1))
     .tabViewStyle(PageTabViewStyle())
   }
 }

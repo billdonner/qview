@@ -49,7 +49,7 @@ struct MatrixView: View {
         if let bottomLabel = bottomLabel {
           Text("\(bottomLabel)")
             .font(.body)
-            .padding()
+            .padding(.horizontal)
         }
       }
     }
