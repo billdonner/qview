@@ -7,6 +7,57 @@
 
 import SwiftUI
 
+
+struct HowToPlayScreen: View {
+  @Binding var  isPresented: Bool
+  var body: some View {
+    TabView {
+      FrontMatter()
+        .tag(mkID())
+      startInAnyCorner(isPresented: $isPresented)
+        .tag(mkID())
+      move0(isPresented: $isPresented)
+        .tag(mkID())
+      move00(isPresented: $isPresented)
+        .tag(mkID())
+      nonAdjecntMove(isPresented: $isPresented)
+        .tag(mkID())
+      move1(isPresented: $isPresented)
+        .tag(mkID())
+      move2(isPresented: $isPresented)
+        .tag(mkID())
+     // MoreFrontMatter()
+     //   .tag(mkID())
+      interiorAdjacency(isPresented: $isPresented)
+        .tag(mkID())
+      borderAdjacency(isPresented: $isPresented)
+        .tag(mkID())
+      cornerAdjacency(isPresented: $isPresented)
+        .tag(mkID())
+      Intermission()
+        .tag(mkID())
+      shortPathToSuccess(isPresented: $isPresented)
+        .tag(mkID())
+      shortPathToFailure(isPresented: $isPresented)
+        .tag(mkID())
+      longPathToSuccess(isPresented: $isPresented)
+        .tag(mkID())
+      notA3x3Winner(isPresented: $isPresented)
+        .tag(mkID())
+      longPathToFailure(isPresented: $isPresented)
+        .tag(mkID())
+      allFilledButWinningPath(isPresented: $isPresented)
+        .tag(mkID())
+      bottomsUp(isPresented: $isPresented)
+        .tag(mkID())
+      niceWinner(isPresented: $isPresented)
+        .tag(mkID())
+    }
+    .tabViewStyle(PageTabViewStyle())
+  }
+}
+
+
 struct FrontMatter :View{
   var body: some View {
     ZStack{
@@ -15,14 +66,14 @@ struct FrontMatter :View{
     }.ignoresSafeArea()
   }
 }
-struct MoreFrontMatter :View{
-  var body: some View {
-    ZStack{
-      Color.yellow
-      Text("Let's Talk About Adjacency").font(.largeTitle).padding()
-    }.ignoresSafeArea()
-  }
-}
+//struct MoreFrontMatter :View{
+//  var body: some View {
+//    ZStack{
+//      Color.yellow
+//      Text("Let's Talk About Adjacency").font(.largeTitle).padding()
+//    }.ignoresSafeArea()
+//  }
+//}
 struct Intermission :View{
   var body: some View {
     ZStack{
@@ -45,19 +96,19 @@ func notA3x3Winner(isPresented:Binding<Bool>) -> MatrixView {
         PDM((row: 1, col: 2), move: Move(.correct, text: ntoSF(4))),
         PDM((row: 2, col: 1), move: Move(.incorrect, text: ntoSF(7))),
         PDM((row: 2, col: 2), move: Move(.correct, text: ntoSF(5))),
-    ]), reason: "Tough Loss", bottomLabel: "Not a winner", correctColor: .green, incorrectColor: .red, isPresented: isPresented)
+    ]), topLabel: "Tough Loss", bottomLabel: "Not a winner", correctColor: .green, incorrectColor: .red, isPresented: isPresented)
 }
 
 func cornerAdjacency(isPresented: Binding<Bool>) -> MatrixView {
   return MatrixView(
     rows: 3, cols: 3,
     matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-      PDM((row: 0, col: 0), move: Move(.incorrect, text: "flag.fill")),
+      PDM((row: 0, col: 0), move: Move(.incorrect, text: "1.circle")),
       PDM((row: 1, col: 1), move: Move(.correct, text: "checkmark")),
       PDM((row: 1, col: 0), move: Move(.correct, text: "checkmark")),
       PDM((row: 0, col: 1), move: Move(.correct, text: "checkmark")),
     ]),
-    reason: "Corner Adjacency",
+    topLabel: "Where's My Next Move?",
     bottomLabel: "The corner cells have only 3 adjacent cells",
     correctColor: .yellow,
     incorrectColor: .blue,
@@ -69,7 +120,7 @@ func interiorAdjacency(isPresented: Binding<Bool>) -> MatrixView {
   return MatrixView(
     rows: 3, cols: 3,
     matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-      PDM((row: 1, col: 1), move: Move(.incorrect, text: "flag.fill")),
+      PDM((row: 1, col: 1), move: Move(.incorrect, text: "1.circle")),
       PDM((row: 0, col: 0), move: Move(.correct, text: "checkmark")),
       PDM((row: 0, col: 2), move: Move(.correct, text: "checkmark")),
       PDM((row: 2, col: 0), move: Move(.correct, text: "checkmark")),
@@ -79,8 +130,26 @@ func interiorAdjacency(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 0, col: 1), move: Move(.correct, text: "checkmark")),
       PDM((row: 2, col: 1), move: Move(.correct, text: "checkmark")),
     ]),
-    reason: "Interior Adjacency",
+    topLabel: "Where's My Next Move?",
     bottomLabel: "Each interior cell has up to 8 adjacent cells",
+    correctColor: .yellow,
+    incorrectColor: .blue,
+    isPresented: isPresented
+  )
+}
+func borderAdjacency(isPresented: Binding<Bool>) -> MatrixView {
+  return MatrixView(
+    rows: 3, cols: 3,
+    matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+      PDM((row: 1, col: 0), move: Move(.incorrect, text: "1.circle")),
+      PDM((row: 0, col: 0), move: Move(.correct, text: "checkmark")),
+      PDM((row: 1, col: 1), move: Move(.correct, text: "checkmark")),
+      PDM((row: 0, col: 1), move: Move(.correct, text: "checkmark")),
+      PDM((row: 2, col: 0), move: Move(.correct, text: "checkmark")),
+      PDM((row: 2, col: 1), move: Move(.correct, text: "checkmark")),
+    ]),
+    topLabel: "Where's My Next Move?",
+    bottomLabel: "The border cells have 5 adjacent cells",
     correctColor: .yellow,
     incorrectColor: .blue,
     isPresented: isPresented
@@ -105,7 +174,7 @@ func allFilledButWinningPath(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 2, col: 3), move: Move(.incorrect, text: ntoSF(12))),
       PDM((row: 3, col: 0), move: Move(.correct, text: ntoSF(13))),
     ]),
-    reason: "Almost All Filled But Success",
+    topLabel: "Almost All Filled But Success",
     bottomLabel: "4-7-2-5-9-13",
     correctColor: .green,
     incorrectColor: .red,
@@ -124,8 +193,8 @@ func longPathToSuccess(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 2, col: 1), move: Move(.correct, text: ntoSF(5))),
       PDM((row: 2, col: 0), move: Move(.correct, text: ntoSF(6))),
     ]),
-    reason: "Long Path to Success",
-    bottomLabel: "Reached end successfully",
+    topLabel: "Long Path to Success",
+    bottomLabel: "Reached end successfully 1-3-4-5-6",
     correctColor: .green,
     incorrectColor: .red,
     isPresented: isPresented
@@ -140,7 +209,7 @@ func shortPathToSuccess(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 1, col: 1), move: Move(.correct, text: ntoSF(2))),
       PDM((row: 2, col: 0), move: Move(.correct, text: ntoSF(3))),
     ]),
-    reason: "Short Path to Success",
+    topLabel: "Short Path to Success",
     bottomLabel: "Can't do better on 3x3 board",
     correctColor: .green,
     incorrectColor: .red,
@@ -160,7 +229,7 @@ func longPathToFailure(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 2, col: 1), move: Move(.correct, text: ntoSF(6))),
       PDM((row: 2, col: 0), move: Move(.incorrect, text: ntoSF(7))),
     ]),
-    reason: "Long Path to Failure",
+    topLabel: "Long Path to Failure",
     bottomLabel: "There was hope until move 7 failed\nIt looked like player needed to avoid two cells",
     correctColor: .green,
     incorrectColor: .red,
@@ -175,7 +244,7 @@ func shortPathToFailure(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 0, col: 0), move: Move(.incorrect, text: ntoSF(1))),
       PDM((row: 2, col: 0), move: Move(.incorrect, text: ntoSF(2))),
     ]),
-    reason: "Short Path to Failure",
+    topLabel: "Short Path to Failure",
     bottomLabel: "Can't Ever Get Either Diagonal",
     correctColor: .green,
     incorrectColor: .red,
@@ -194,7 +263,7 @@ func sixBySixExample1(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 4, col: 4), move: Move(.correct, text: ntoSF(5))),
       PDM((row: 5, col: 5), move: Move(.correct, text: ntoSF(6))),
     ]),
-    reason: "6x6 Path 1",
+    topLabel: "6x6 Path 1",
     bottomLabel: "Filled upper diagonal correctly",
     correctColor: .green,
     incorrectColor: .red,
@@ -213,7 +282,7 @@ func bottomsUp(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 4, col: 1), move: Move(.correct, text: ntoSF(2))),
       PDM((row: 5, col: 0), move: Move(.correct, text: ntoSF(1))),
     ]),
-    reason: "Bottoms Up",
+    topLabel: "Bottoms Up",
     bottomLabel: "Filled lower diagonal correctly",
     correctColor: .green,
     incorrectColor: .red,
@@ -236,7 +305,7 @@ func niceWinner(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 5, col: 4), move: Move(.correct, text: ntoSF(9))),
       PDM((row: 5, col: 5), move: Move(.correct, text: ntoSF(10))),
     ]),
-    reason: "Nice Winner",
+    topLabel: "Nice Winner",
     bottomLabel: "Despite two key diagonal losers, the game was won in 10 moves!",
     correctColor: .green,
     incorrectColor: .red,
@@ -244,24 +313,6 @@ func niceWinner(isPresented: Binding<Bool>) -> MatrixView {
   )
 }
 
-func borderAdjacency(isPresented: Binding<Bool>) -> MatrixView {
-  return MatrixView(
-    rows: 3, cols: 3,
-    matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-      PDM((row: 1, col: 0), move: Move(.incorrect, text: "flag.fill")),
-      PDM((row: 0, col: 0), move: Move(.correct, text: "checkmark")),
-      PDM((row: 1, col: 1), move: Move(.correct, text: "checkmark")),
-      PDM((row: 0, col: 1), move: Move(.correct, text: "checkmark")),
-      PDM((row: 2, col: 0), move: Move(.correct, text: "checkmark")),
-      PDM((row: 2, col: 1), move: Move(.correct, text: "checkmark")),
-    ]),
-    reason: "Border Adjacency",
-    bottomLabel: "The border cells have 5 adjacent cells",
-    correctColor: .yellow,
-    incorrectColor: .blue,
-    isPresented: isPresented
-  )
-}
 
 func startInAnyCorner(isPresented: Binding<Bool>) -> MatrixView {
   return MatrixView(
@@ -272,8 +323,8 @@ func startInAnyCorner(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 2, col: 0), move: Move(.correct, text: "checkmark")),
       PDM((row: 2, col: 2), move: Move(.correct, text: "checkmark")),
     ]),
-    reason: "Start In Any Corner",
-    bottomLabel: "Do We Want This Rule?",
+    topLabel: "Start In Any Corner",
+    bottomLabel: "Or just start anywhere you like",
     correctColor: .yellow,
     incorrectColor: .blue,
     isPresented: isPresented
@@ -286,14 +337,27 @@ func move0(isPresented: Binding<Bool>) -> MatrixView {
     matrix: PDMatrix(rows: 3, cols: 3, pdms: [
       PDM((row: 2, col: 0), move: Move(.correct, text: "1.circle")),
     ]),
-    reason: "Let's Start Here",
+    topLabel: "Let's Start Here",
     bottomLabel: "Picking A Friendly Topic and Question",
     correctColor: .yellow,
     incorrectColor: .blue,
     isPresented: isPresented
   )
 }
-
+func move00(isPresented: Binding<Bool>) -> MatrixView {
+  return MatrixView(
+    rows: 3, cols: 3,
+    matrix: PDMatrix(rows: 3, cols: 3, pdms: [
+      PDM((row: 2, col: 0), move: Move(.correct, text: "1.circle")),
+      PDM((row: 0, col:2), move: Move(.correct, text: "star.fill")),
+    ]),
+    topLabel: "Try to End Here",
+    bottomLabel: "Any Path Will Do ",
+    correctColor: .yellow,
+    incorrectColor: .blue,
+    isPresented: isPresented
+  )
+}
 func move1(isPresented: Binding<Bool>) -> MatrixView {
   return MatrixView(
     rows: 3, cols: 3,
@@ -301,7 +365,7 @@ func move1(isPresented: Binding<Bool>) -> MatrixView {
       PDM((row: 1, col: 1), move: Move(.correct, text: "2.circle")),
       PDM((row: 2, col: 0), move: Move(.correct, text: "1.circle")),
     ]),
-    reason: " Now Go To the Center",
+    topLabel: "Try the Center",
     bottomLabel: "The center is often a good choice",
     correctColor: .yellow,
     incorrectColor: .blue,
@@ -313,13 +377,13 @@ func nonAdjecntMove(isPresented: Binding<Bool>) -> MatrixView {
   return MatrixView(
     rows: 3, cols: 3,
     matrix: PDMatrix(rows: 3, cols: 3, pdms: [
-      PDM((row: 2, col: 2), move: Move(.correct, text: "xmark.circle")),
+      PDM((row: 2, col: 2), move: Move(.incorrect, text: "xmark.circle")),
       PDM((row: 2, col: 0), move: Move(.correct, text: "1.circle")),
     ]),
-    reason: "You Can't Move Here",
-    bottomLabel: "It's not adjacent!",
+    topLabel: "You Can't Move Here",
+    bottomLabel: "At least not at first  - It's not adjacent!",
     correctColor: .yellow,
-    incorrectColor: .blue,
+    incorrectColor: .red,
     isPresented: isPresented
   )
 }
@@ -328,5 +392,8 @@ func move2(isPresented: Binding<Bool>) -> MatrixView {
     PDM((row: 1, col: 1), move: Move(.correct, text: "2.circle")),
     PDM((row: 2, col: 0), move: Move(.correct, text: "1.circle")),
     PDM((row: 0, col: 2), move: Move(.correct, text: "3.circle")),
-  ]), reason: "Good Job, Now Finish Up", bottomLabel: "If you answer the associated questions correctly,  you win!", correctColor: .yellow, incorrectColor: .blue, isPresented: isPresented)
+  ]), topLabel: "Good Job, Now Finish Up", bottomLabel: "If you answer the associated questions correctly,  you win!", correctColor: .yellow, incorrectColor: .blue, isPresented: isPresented)
+}
+#Preview {
+  HowToPlayScreen(isPresented:.constant(true))
 }
